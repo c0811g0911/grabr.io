@@ -1,0 +1,60 @@
+import React from 'react';
+import {connectToStores} from 'fluxible-addons-react';
+import {loadCountriesV2} from '../../actions/HelperActionCreators';
+import {sortBy} from 'lodash/collection';
+import {AppStore} from '../../stores/AppStore';
+import {AllCountriesStore} from '../../stores/SequenceStores';
+import {shapeCountry, CountryShape} from '../../models/CountryModel';
+
+const {arrayOf, func, object} = React.PropTypes;
+
+export const CountrySelect = connectToStores(class extends React.Component {
+  static displayName = 'CountrySelect';
+
+  static contextTypes = {
+    executeAction: func.isRequired,
+    getStore: func.isRequired,
+    intl: object.isRequired
+  };
+
+  static propTypes = {
+    countries: arrayOf(CountryShape).isRequired,
+    value: CountryShape,
+    onChange: func.isRequired
+  };
+
+  componentDidMount() {
+    this.context.executeAction(loadCountriesV2);
+  }
+
+  render() {
+    const countrySelectPlaceholder = this.context.intl.formatMessage({id: 'components.country_select.placeholder'});
+    const {countries, onChange, value} = this.props;
+
+    return <div>
+      <select value={(value || {}).id} onChange={event => {
+        const id = event.target.value;
+        const country = countries.find(country => country.id == id);
+        onChange(country);
+      }}>
+        <option key="empty" value={""}>{countrySelectPlaceholder}</option>
+        {sortBy(countries, [
+          ({alpha2}) => alpha2 === 'US' ? 0 : 1,
+          ({alpha2}) => alpha2 === 'CA' ? 0 : 1,
+          ({translations}) => this.context.getStore(AppStore).getTranslation(translations)
+        ]).map(({id, translations}) => {
+          return <option key={id} value={id}>
+            {this.context.getStore(AppStore).getTranslation(translations)}
+          </option>;
+        })}
+      </select>
+    </div>;
+  }
+}, [AllCountriesStore], ({getStore}) => ({
+  countries: getStore(AllCountriesStore).get().map(shapeCountry)
+}));
+
+
+
+// WEBPACK FOOTER //
+// ./src/main/app/components/country-select/CountrySelect.js

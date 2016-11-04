@@ -1,0 +1,17 @@
+import React from 'react';
+import './_modal.scss';
+
+export class Modal extends React.Component {
+  render() {
+    return <div className="modal">
+      <div className="modal__content">
+        {this.props.children}
+      </div>
+    </div>;
+  }
+}
+
+
+
+// WEBPACK FOOTER //
+// ./src/main/app/components/modal/Modal.js

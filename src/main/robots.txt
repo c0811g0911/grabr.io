@@ -1,0 +1,8 @@
+module.exports = __webpack_public_path__ + "robots.txt";
+
+
+//////////////////
+// WEBPACK FOOTER
+// ./~/file-loader?name=[name].[ext]!./src/main/robots.txt
+// module id = 1108
+// module chunks = 0
